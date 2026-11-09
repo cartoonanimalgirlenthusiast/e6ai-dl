@@ -58,7 +58,9 @@ def download_files(jsonData, currentPostCount):
         if os.path.exists(fileName):
             print(f"File exists. Skipping {fileName}")
         else:
-            print(f"Downloading file {currentPostCount} of {postCount}: {url}")
+            post_id = post["id"]
+
+            print(f"Downloading file {currentPostCount} of {postCount} [ID {post_id}]: {url}")
 
             response = requests.get(url)
 
