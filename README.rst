@@ -2,7 +2,7 @@ A simple Python script for downloading all files containing a certain tag from E
 
 Installation
 ============
-The only 3rd party library being used is ``requests``, so it's a bit overkill to create a virtual environment. Assuming you already have Python installed, just run:
+The only 3rd party library being used is ``requests``, so it's a bit overkill to create a virtual environment. Assuming you already have Python installed, just open ``cmd.exe`` (Windows) or ``Terminal`` (OSX/Linux) and run:
 
 .. code-block:: bash
 
