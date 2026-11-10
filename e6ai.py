@@ -6,7 +6,9 @@ import json
 
 from urllib.parse import urlparse
 
+login = ""
 api_host = "https://e6ai.net"
+api_key = ""
 
 if len(sys.argv) < 2:
     print("Please provide an artist/director name, or any single tag. Example: >python e6ai.py \"loona_(helluva_boss)\"")
@@ -17,7 +19,7 @@ else:
 
 outputDir = f"{os.getcwd()}/e6ai_downloads/{tag}"
 
-headers = {"user-agent": f"archive_dl/0.1"}
+headers = {"user-agent": f"{login}_dl/0.1"}
 
 def get_urls(jsonData):
     urlList = []
@@ -33,6 +35,8 @@ def get_json_data(page):
     api_url = f"{api_host}/posts.json"
 
     params = {
+        "login": login,
+        "api_key": api_key,
         "limit": "100",
         "tags": tag,
         "page": page
@@ -60,15 +64,18 @@ def download_files(jsonData, currentPostCount):
         else:
             post_id = post["id"]
 
-            print(f"Downloading file {currentPostCount} of {postCount} [ID {post_id}]: {url}")
+            if is_url(url):
+                record_json(post, fileName)
 
-            response = requests.get(url)
+                print(f"Downloading file {currentPostCount} of {postCount} [ID {post_id}]: {url}")
 
-            with open(fileName, mode="wb") as file:
-                for chunk in response.iter_content(chunk_size=1024):
-                    file.write(chunk)
+                response = requests.get(url)
 
-        record_json(post, fileName)
+                with open(fileName, mode="wb") as file:
+                    for chunk in response.iter_content(chunk_size=1024):
+                        file.write(chunk)
+            else:
+                print(f"Skipping post {post_id}, no valid file URL found!")
 
         currentPostCount += 1
 
@@ -97,6 +104,14 @@ def get_post_count():
     postCount = jsonTagData[0]["post_count"]
 
     return postCount
+
+def is_url(url):
+    try:
+        result = urlparse(url)
+
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
 
 postCount = get_post_count()
 
