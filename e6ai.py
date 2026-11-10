@@ -4,6 +4,7 @@ import re
 import requests
 import json
 import configparser
+import time
 
 from urllib.parse import urlparse
 
@@ -128,6 +129,8 @@ page = 1
 current_post_count = 1
 
 while page:
+    start_time = time.time()
+
     json_data = get_json_data(page)
 
     current_post_count = download_files(json_data, current_post_count)
@@ -138,3 +141,9 @@ while page:
         print("All done!")
     else:
         page = f"b{json_data["posts"][-1]["id"]}"
+
+    end_time = time.time()
+
+    elapsed_time = 5 if end_time - start_time > 5 else end_time - start_time
+
+    time.sleep(5 - elapsed_time)
