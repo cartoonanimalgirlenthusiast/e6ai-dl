@@ -26,16 +26,6 @@ output_dir = f"{os.getcwd()}/e6ai_downloads/{tag}"
 
 headers = {"user-agent": f"{login}_dl/0.1"}
 
-def get_urls(json_data):
-    url_list = []
-
-    for post in json_data["posts"]:
-        url = post["file"]["url"]
-
-        url_list.append(url)
-
-    return url_list
-
 def get_json_data(page):
     api_url = f"{api_host}/posts.json"
 
