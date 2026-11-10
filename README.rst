@@ -17,7 +17,9 @@ If you want to create a virtual environment:
 
 Setup
 =====
-You can run the script directly without any additional configuration, however E6AI blocks URLs from anonymous access if they contain certain tags, such as ``young``, causing posts containing these tags to be skipped by the script. If you want to download everything, you'll need to provide your e6ai.net login name and an API key for your account. Note that the API key is NOT your account password. Don't share it with anyone.
+**Optional**
+
+You can run the script directly without any additional configuration, however E6AI blocks URLs from anonymous access if they contain certain tags, such as ``young``, causing posts containing these tags to be skipped by the script. If you want to download everything, you'll need to provide your e6ai.net login name and an API key for your account. Note that the API key is NOT your account password. Even so, it can let people impersonate you, so don't share it with anyone.
 
 To obtain an API key
 
@@ -30,6 +32,7 @@ To obtain an API key
 * set the name and expiration to whatever you want
 
 The new API key will now be listed on the page. Copy the key (the string of random numbers and letters under the Key column).
+
 Open ``config.txt`` from this repository, put your login name and API key on the corresponding lines, and save the file.
 
 Usage
