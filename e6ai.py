@@ -17,19 +17,19 @@ if len(sys.argv) < 2:
 else:
     tag = sys.argv[1]
 
-outputDir = f"{os.getcwd()}/e6ai_downloads/{tag}"
+output_dir = f"{os.getcwd()}/e6ai_downloads/{tag}"
 
 headers = {"user-agent": f"{login}_dl/0.1"}
 
-def get_urls(jsonData):
-    urlList = []
+def get_urls(json_data):
+    url_list = []
 
-    for post in jsonData["posts"]:
+    for post in json_data["posts"]:
         url = post["file"]["url"]
 
-        urlList.append(url)
+        url_list.append(url)
 
-    return urlList
+    return url_list
 
 def get_json_data(page):
     api_url = f"{api_host}/posts.json"
@@ -46,48 +46,48 @@ def get_json_data(page):
 
     posts = response.text
 
-    jsonData = json.loads(posts)
+    json_data = json.loads(posts)
 
-    return jsonData
+    return json_data
 
-def download_files(jsonData, currentPostCount):
-    if not os.path.exists(outputDir):
-        os.makedirs(outputDir)
+def download_files(json_data, current_post_count):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-    for post in jsonData["posts"]:
+    for post in json_data["posts"]:
         url = post["file"]["url"]
 
-        fileName = f"{outputDir}/{os.path.basename(urlparse(url).path)}"
+        file_name = f"{output_dir}/{os.path.basename(urlparse(url).path)}"
 
-        if os.path.exists(fileName):
-            print(f"File exists. Skipping {fileName}")
+        if os.path.exists(file_name):
+            print(f"File exists. Skipping {file_name}")
         else:
             post_id = post["id"]
 
             if is_url(url):
-                record_json(post, fileName)
+                record_json(post, file_name)
 
-                print(f"Downloading file {currentPostCount} of {postCount} [ID {post_id}]: {url}")
+                print(f"Downloading file {current_post_count} of {post_count} [ID {post_id}]: {url}")
 
                 response = requests.get(url)
 
-                with open(fileName, mode="wb") as file:
+                with open(file_name, mode="wb") as file:
                     for chunk in response.iter_content(chunk_size=1024):
                         file.write(chunk)
             else:
                 print(f"Skipping post {post_id}, no valid file URL found!")
 
-        currentPostCount += 1
+        current_post_count += 1
 
-    return currentPostCount
+    return current_post_count
 
-def record_json(post, fileName):
-    fileNameJson = re.sub(r"(.*)\..*", "\\1.json", fileName)
+def record_json(post, file_name):
+    file_name_json = re.sub(r"(.*)\..*", "\\1.json", file_name)
 
-    if os.path.exists(fileNameJson):
-        print(f"File exists. Skipping {fileNameJson}")
+    if os.path.exists(file_name_json):
+        print(f"File exists. Skipping {file_name_json}")
     else:
-        with open(fileNameJson, "a", encoding="utf-8") as file:
+        with open(file_name_json, "a", encoding="utf-8") as file:
             file.write(json.dumps(post, indent=4))
 
 def get_post_count():
@@ -99,13 +99,13 @@ def get_post_count():
 
     response = requests.get(api_url, params=params, headers=headers)
 
-    tagData = response.text
+    tag_data = response.text
 
-    jsonTagData = json.loads(tagData)
+    json_tag_data = json.loads(tag_data)
 
-    postCount = jsonTagData[0]["post_count"]
+    post_count = json_tag_data[0]["post_count"]
 
-    return postCount
+    return post_count
 
 def is_url(url):
     try:
@@ -115,22 +115,22 @@ def is_url(url):
     except ValueError:
         return False
 
-postCount = get_post_count()
+post_count = get_post_count()
 
-print(f"{postCount} posts found, starting downloads...")
+print(f"{post_count} posts found, starting downloads...")
 
 page = 1
 
-currentPostCount = 1
+current_post_count = 1
 
 while page:
-    jsonData = get_json_data(page)
+    json_data = get_json_data(page)
 
-    currentPostCount = download_files(jsonData, currentPostCount)
+    current_post_count = download_files(json_data, current_post_count)
 
-    if len(jsonData["posts"]) == 0:
+    if len(json_data["posts"]) == 0:
         page = 0
 
         print("All done!")
     else:
-        page = f"b{jsonData["posts"][-1]["id"]}"
+        page = f"b{json_data["posts"][-1]["id"]}"
