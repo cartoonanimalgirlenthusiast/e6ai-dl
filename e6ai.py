@@ -79,6 +79,8 @@ def download_files(jsonData, currentPostCount):
 
         currentPostCount += 1
 
+    return currentPostCount
+
 def record_json(post, fileName):
     fileNameJson = re.sub(r"(.*)\..*", "\\1.json", fileName)
 
@@ -124,7 +126,7 @@ currentPostCount = 1
 while page:
     jsonData = get_json_data(page)
 
-    download_files(jsonData, currentPostCount)
+    currentPostCount = download_files(jsonData, currentPostCount)
 
     if len(jsonData["posts"]) == 0:
         page = 0
