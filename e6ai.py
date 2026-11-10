@@ -142,8 +142,8 @@ while page:
     else:
         page = f"b{json_data["posts"][-1]["id"]}"
 
-    end_time = time.time()
+        end_time = time.time()
 
-    elapsed_time = 5 if end_time - start_time > 5 else end_time - start_time
+        elapsed_time = 5 if end_time - start_time > 5 else end_time - start_time
 
-    time.sleep(5 - elapsed_time)
+        time.sleep(5 - elapsed_time)
