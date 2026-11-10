@@ -3,12 +3,16 @@ import sys
 import re
 import requests
 import json
+import configparser
 
 from urllib.parse import urlparse
 
-login = ""
+config = configparser.RawConfigParser()
+config.read("config.txt")
+
 api_host = "https://e6ai.net"
-api_key = ""
+login = config.items("CREDENTIALS")[0][1]
+api_key = config.items("CREDENTIALS")[1][1]
 
 if len(sys.argv) < 2:
     print("Please provide an artist/director name, or any single tag. Example: >python e6ai.py \"loona_(helluva_boss)\"")
