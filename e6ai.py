@@ -62,37 +62,42 @@ def download_files(json_data, current_post_count):
     for post in json_data["posts"]:
         url = post["file"]["url"]
 
-        file_name = f"{output_dir}/{os.path.basename(urlparse(url).path)}"
+        post_id = post["id"]
 
-        if os.path.exists(file_name):
-            print(f"File exists. Skipping {file_name}")
+        if is_url(url):
+            print(f"Downloading file {current_post_count} of {post_count} [ID {post_id}]: {url}")
+
+            download_file(post)
+
+            record_json(post)
         else:
-            post_id = post["id"]
-
-            if is_url(url):
-                record_json(post, file_name)
-
-                print(f"Downloading file {current_post_count} of {post_count} [ID {post_id}]: {url}")
-
-                response = requests.get(url)
-
-                with open(file_name, mode="wb") as file:
-                    for chunk in response.iter_content(chunk_size=1024):
-                        file.write(chunk)
-            else:
-                print(f"Skipping post {post_id}, no valid file URL found!")
+            print(f"Skipping post {post_id}, no valid file URL found!")
 
         current_post_count += 1
 
     return current_post_count
 
-def record_json(post, file_name):
-    file_name_json = re.sub(r"(.*)\..*", "\\1.json", file_name)
+def download_file(post):
+    file_name = f"{output_dir}/{post["file"]["md5"]}.{post["file"]["ext"]}"
 
-    if os.path.exists(file_name_json):
-        print(f"File exists. Skipping {file_name_json}")
+    if os.path.exists(file_name):
+        print(f"File exists. Skipping {file_name}")
     else:
-        with open(file_name_json, "a", encoding="utf-8") as file:
+        url = post["file"]["url"]
+
+        response = requests.get(url)
+
+        with open(file_name, mode="wb") as file:
+            for chunk in response.iter_content(chunk_size=1024):
+                file.write(chunk)
+
+def record_json(post):
+    file_name = f"{output_dir}/{post["file"]["md5"]}.json"
+
+    if os.path.exists(file_name):
+        print(f"File exists. Skipping {file_name}")
+    else:
+        with open(file_name, "a", encoding="utf-8") as file:
             file.write(json.dumps(post, indent=4))
 
 def get_post_count():
