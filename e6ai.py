@@ -15,16 +15,9 @@ api_host = "https://e6ai.net"
 login = config.items("CREDENTIALS")[0][1]
 api_key = config.items("CREDENTIALS")[1][1]
 
-if len(sys.argv) < 2:
-    print("Please provide an artist/director name, or any single tag. Example: >python e6ai.py \"loona_(helluva_boss)\"")
-
-    sys.exit(1)
-else:
-    tag = sys.argv[1]
-
-output_dir = f"{os.getcwd()}/e6ai_downloads/{tag}"
-
 headers = {"user-agent": f"{login}_dl/0.1"}
+
+rate_limit_time = 2
 
 def get_json_data(page):
     api_url = f"{api_host}/posts.json"
@@ -32,7 +25,7 @@ def get_json_data(page):
     params = {
         "login": login,
         "api_key": api_key,
-        "limit": "100",
+        "limit": "320",
         "tags": tag,
         "page": page
     }
@@ -45,7 +38,7 @@ def get_json_data(page):
 
     return json_data
 
-def download_files(json_data, current_post_count):
+def download_files(json_data, post_count, current_post_count):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -55,7 +48,7 @@ def download_files(json_data, current_post_count):
         post_id = post["id"]
 
         if is_url(url):
-            print(f"Downloading file {current_post_count} of {post_count} [ID {post_id}]: {url}")
+            print(f"Downloading file {current_post_count} of {post_count} [Tag: {tag}] [ID {post_id}]: {url}")
 
             download_file(post)
 
@@ -107,6 +100,68 @@ def get_post_count():
 
     return post_count
 
+def get_directors():
+    page = 1
+ 
+    api_url = f"{api_host}/tags.json"
+
+    params = {
+        "login": login,
+        "api_key": api_key,
+        "limit": "320",
+        "search[category]": "1",
+        "page": page
+    }
+
+    response = requests.get(api_url, params=params, headers=headers)
+
+    response_text = response.text
+
+    response_json = json.loads(response_text)
+
+    director_names = []
+
+    total_post_count = 0
+
+    for director in response_json:
+        director_names.append(director["name"])
+
+        total_post_count += director["post_count"]
+
+    print(f"Found {len(director_names)} directors with a total of {total_post_count} posts.")
+
+    return director_names
+
+def loop_pages(tag):
+    post_count = get_post_count()
+
+    print(f"{post_count} posts found tagged with \"{tag}\", starting downloads...")
+
+    page = 1
+
+    current_post_count = 1
+
+    while page:
+        start_time = time.time()
+
+        json_data = get_json_data(page)
+
+        current_post_count = download_files(json_data, post_count, current_post_count)
+
+        if len(json_data["posts"]) == 0:
+            page = 0
+        else:
+            page = f"b{json_data["posts"][-1]["id"]}"
+
+            delay(start_time)
+
+def delay(start_time):
+    end_time = time.time()
+
+    elapsed_time = rate_limit_time if end_time - start_time > rate_limit_time else end_time - start_time
+
+    time.sleep(rate_limit_time - elapsed_time)
+
 def is_url(url):
     try:
         result = urlparse(url)
@@ -115,30 +170,29 @@ def is_url(url):
     except ValueError:
         return False
 
-post_count = get_post_count()
+if len(sys.argv) < 2:
+    print("WARNING: You didn't provide a tag. This will cause the script to download EVERYTHING from the site!")
 
-print(f"{post_count} posts found, starting downloads...")
+    inp = input("Continue? [y/N]" or "n")
 
-page = 1
+    if inp.lower() == "n":
+        sys.exit(1)
 
-current_post_count = 1
+    tags = get_directors()
 
-while page:
+    output_dir = f"{os.getcwd()}/e6ai_downloads"
+else:
+    tag = sys.argv[1]
+
+    tags = [tag]
+
+    output_dir = f"{os.getcwd()}/e6ai_downloads/{tag}"
+
+for tag in tags:
     start_time = time.time()
 
-    json_data = get_json_data(page)
+    loop_pages(tag)
 
-    current_post_count = download_files(json_data, current_post_count)
+    delay(start_time)
 
-    if len(json_data["posts"]) == 0:
-        page = 0
-
-        print("All done!")
-    else:
-        page = f"b{json_data["posts"][-1]["id"]}"
-
-        end_time = time.time()
-
-        elapsed_time = 5 if end_time - start_time > 5 else end_time - start_time
-
-        time.sleep(5 - elapsed_time)
+print("All done!")
