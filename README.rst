@@ -1,5 +1,7 @@
 A simple Python script for downloading all files containing a certain tag from E6AI.
 
+Update: E6AI is no more, but the script can still be used to download files from sites that use the same API, such as floofgens.net or blep.art (the latter might not allow this yet). The default API URL has been changed to https://floofgens.net.
+
 Installation
 ============
 The only 3rd party library being used is ``requests``, so it's a bit overkill to create a virtual environment. Assuming you already have Python installed, just open ``cmd.exe`` (Windows) or ``Terminal`` (OSX/Linux) and run:
