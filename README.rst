@@ -39,6 +39,8 @@ Open ``config.txt`` from this repository, put your login name and API key on the
 
 Usage
 =====
+**Standard Use**
+
 Simply run the command
 
 .. code-block:: bash
@@ -58,3 +60,7 @@ The tag can be any kind of tag (artist, character, general, etc.). Since this sc
 The files will be downloaded into a subfolder named ``e6ai_downloads/[tag]``. Each file will be named after its MD5 hash (the same name it had on E6AI).
 
 Alongside each image/video file will be a corresponding JSON file that contains all the info the file had on E6AI (tags, post date, source, description, etc.). 
+
+**Download Everything**
+
+If you run the script without specifying a tag, the script will gather a list of **all** directors/artists and download everything from all of them. Obviously this will take a long time, and you'll need plenty of free space for it (E6AI had about 560 GB of content by the time it was shut down).
