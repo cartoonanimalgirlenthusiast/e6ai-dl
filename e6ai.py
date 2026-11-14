@@ -11,7 +11,8 @@ from urllib.parse import urlparse
 config = configparser.RawConfigParser()
 config.read("config.txt")
 
-api_host = "https://e6ai.net"
+#api_host = "https://e6ai.net"
+api_host = "https://floofgens.net"
 login = config.items("CREDENTIALS")[0][1]
 api_key = config.items("CREDENTIALS")[1][1]
 
