@@ -19,6 +19,8 @@ headers = {"user-agent": f"{login}_dl/0.1"}
 
 rate_limit_time = 2
 
+resume_file = "resume.txt"
+
 def get_json_data(page):
     api_url = f"{api_host}/posts.json"
 
@@ -128,7 +130,16 @@ def get_directors():
 
         total_post_count += director["post_count"]
 
-    print(f"Found {len(director_names)} directors with a total of {total_post_count} posts.")
+    if os.path.exists(resume_file):
+        resume_director = open(resume_file, "r").read()
+
+        director_names = director_names[director_names.index(resume_director):]
+
+        print(director_names)
+
+        print(f"Resuming downloads starting with {resume_director}.")
+    else:
+        print(f"Found {len(director_names)} directors with a total of {total_post_count} posts.")
 
     return director_names
 
@@ -191,8 +202,13 @@ else:
 for tag in tags:
     start_time = time.time()
 
+    with open(resume_file, "w", encoding="utf-8") as file:
+        file.write(tag)
+
     loop_pages(tag)
 
     delay(start_time)
+
+os.remove(resume_file)
 
 print("All done!")
