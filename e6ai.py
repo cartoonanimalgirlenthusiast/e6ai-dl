@@ -51,9 +51,7 @@ def download_files(json_data, post_count, current_post_count):
         post_id = post["id"]
 
         if is_url(url):
-            print(f"Downloading file {current_post_count} of {post_count} [Tag: {tag}] [ID {post_id}]: {url}")
-
-            download_file(post)
+            download_file(post, post_count, current_post_count)
 
             record_json(post)
         else:
@@ -63,25 +61,34 @@ def download_files(json_data, post_count, current_post_count):
 
     return current_post_count
 
-def download_file(post):
-    file_name = f"{output_dir}/{post["file"]["md5"]}.{post["file"]["ext"]}"
+def download_file(post, post_count, current_post_count):
+    url = post["file"]["url"]
 
-    if os.path.exists(file_name):
-        print(f"File exists. Skipping {file_name}")
+    if is_url(url):
+        file_name = f"{output_dir}/{post["file"]["md5"]}.{post["file"]["ext"]}"
+
+        post_id = post["id"]
+
+        if os.path.exists(file_name):
+            print(f"File {current_post_count} of {post_count} exists [Tag: {tag}] [ID {post_id}]. Skipping {file_name}")
+        else:
+            print(f"Downloading file {current_post_count} of {post_count} [Tag: {tag}] [ID {post_id}]: {url}")
+
+            url = post["file"]["url"]
+
+            response = requests.get(url)
+
+            with open(file_name, mode="wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
     else:
-        url = post["file"]["url"]
-
-        response = requests.get(url)
-
-        with open(file_name, mode="wb") as file:
-            for chunk in response.iter_content(chunk_size=1024):
-                file.write(chunk)
+        print(f"Skipping post {post_id}, no valid file URL found!")
 
 def record_json(post):
     file_name = f"{output_dir}/{post["file"]["md5"]}.json"
 
     if os.path.exists(file_name):
-        print(f"File exists. Skipping {file_name}")
+        print(f"JSON file exists. Skipping {file_name}")
     else:
         with open(file_name, "a", encoding="utf-8") as file:
             file.write(json.dumps(post, indent=4))
