@@ -1,5 +1,7 @@
 A simple Python script for downloading all files containing a certain tag from E6AI.
 
+Update: E6AI is no more, but the script can still be used to download files from sites that use the same API, such as floofgens.net or blep.art (the latter might not allow this yet). The default API URL has been changed to https://floofgens.net.
+
 Installation
 ============
 The only 3rd party library being used is ``requests``, so it's a bit overkill to create a virtual environment. Assuming you already have Python installed, just open ``cmd.exe`` (Windows) or ``Terminal`` (OSX/Linux) and run:
@@ -37,6 +39,8 @@ Open ``config.txt`` from this repository, put your login name and API key on the
 
 Usage
 =====
+**Standard Use**
+
 Simply run the command
 
 .. code-block:: bash
@@ -56,3 +60,7 @@ The tag can be any kind of tag (artist, character, general, etc.). Since this sc
 The files will be downloaded into a subfolder named ``e6ai_downloads/[tag]``. Each file will be named after its MD5 hash (the same name it had on E6AI).
 
 Alongside each image/video file will be a corresponding JSON file that contains all the info the file had on E6AI (tags, post date, source, description, etc.). 
+
+**Download Everything**
+
+If you run the script without specifying a tag, the script will gather a list of **all** directors/artists and download everything from all of them. Obviously this will take a long time, and you'll need plenty of free space for it (E6AI had about 560 GB of content by the time it was shut down).
