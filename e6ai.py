@@ -110,7 +110,7 @@ def get_post_count():
 
     return post_count
 
-def get_directors():
+def get_artists():
     page = 1
  
     api_url = f"{api_host}/tags.json"
@@ -129,27 +129,27 @@ def get_directors():
 
     response_json = json.loads(response_text)
 
-    director_names = ["female", "male", "intersex", "ambiguous_gender"]
+    artist_names = ["female", "male", "intersex", "ambiguous_gender"]
 
     total_post_count = 0
 
-    for director in response_json:
-        director_names.append(director["name"])
+    for artist in response_json:
+        artist_names.append(artist["name"])
 
-        total_post_count += director["post_count"]
+        total_post_count += artist["post_count"]
 
     if os.path.exists(resume_file):
-        resume_director = open(resume_file, "r").read()
+        resume_artist = open(resume_file, "r").read()
 
-        director_names = director_names[director_names.index(resume_director):]
+        artist_names = artist_names[artist_names.index(resume_artist):]
 
-        print(director_names)
+        print(artist_names)
 
-        print(f"Resuming downloads starting with {resume_director}.")
+        print(f"Resuming downloads starting with {resume_artist}.")
     else:
-        print(f"Found {len(director_names)} directors with a total of {total_post_count} posts.")
+        print(f"Found {len(artist_names)} artists with a total of {total_post_count} posts.")
 
-    return director_names
+    return artist_names
 
 def loop_pages(tag):
     post_count = get_post_count()
@@ -197,7 +197,7 @@ if len(sys.argv) < 2:
     if inp.lower() == "n":
         sys.exit(1)
 
-    tags = get_directors()
+    tags = get_artists()
 
     output_dir = f"{os.getcwd()}/e6ai_downloads"
 else:
