@@ -129,7 +129,7 @@ def get_directors():
 
     response_json = json.loads(response_text)
 
-    director_names = ["female", "male", "intersex", "ambiguous"]
+    director_names = ["female", "male", "intersex", "ambiguous_gender"]
 
     total_post_count = 0
 
